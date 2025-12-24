@@ -1,0 +1,23 @@
+services:
+  backend:
+    image: ${CI_BACKEND_IMAGE}:${BACKEND_IMAGE_TAG}
+    container_name: neo-blog-backend
+    restart: unless-stopped
+    networks:
+      - database-network
+      - app-network
+
+  migrate:
+    image: ${BACKEND_MIGRATE_IMAGE}:${MIGRATE_IMAGE_TAG}
+    container_name: neo-blog-migrate
+    command: ["bun", "run", "prisma:deploy"]
+    env_file:
+      - .env.backend.deploy
+    networks:
+      - database-network
+
+networks:
+  database-network:
+    external: true
+  app-network:
+    external: true

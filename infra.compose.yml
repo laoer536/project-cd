@@ -1,0 +1,40 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: neo-blog-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: neo_blog_db
+      POSTGRES_USER: laoer536
+      POSTGRES_PASSWORD: liujie1998
+    volumes:
+      - neo-blog-postgres-data:/var/lib/postgresql/data
+    networks:
+      - database-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U laoer536 -d neo_blog_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:latest
+    container_name: neo-blog-redis
+    restart: unless-stopped
+    volumes:
+      - neo-blog-redis-data:/data
+    networks:
+      - database-network
+
+volumes:
+  neo-blog-postgres-data:
+  neo-blog-redis-data:
+
+networks:
+  database-network:
+    name: database-network
+    driver: bridge
+
+  app-network:
+    name: app-network
+    driver: bridge

@@ -1,0 +1,15 @@
+services:
+  frontend:
+    image: ${CI_REGISTRY_FRONTEND_IMAGE}:${FRONTEND_IMAGE_TAG}
+    container_name: neo-blog-frontend
+    restart: unless-stopped
+    env_file:
+      - .env.frontend.deploy
+    ports:
+      - "3001:3000"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    external: true
