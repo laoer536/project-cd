@@ -1,0 +1,10 @@
+services:
+  migrate:
+    image: ${BACKEND_MIGRATE_IMAGE}:${MIGRATE_IMAGE_TAG}
+    command: ["bun", "run", "prisma:deploy"]
+    networks:
+      - database-network
+
+networks:
+  database-network:
+    external: true
