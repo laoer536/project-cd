@@ -1,197 +1,188 @@
-## 📄 部署方案使用文档（Summary & Usage Guide）
+# Project CD
 
-````md
-# Docker 前后端分离部署方案 — 使用文档
-
-本文档用于说明当前 **前后端分离、Infra 解耦、支持多项目多环境** 的 Docker CD 部署方案的整体特性与使用方式。
+> A production-ready Docker-based Continuous Delivery (CD) repository
+> for multi-project, multi-service deployment.
 
 ---
 
-## 🎯 方案目标
+## 一、项目简介
 
-- 前端 / 后端 **独立发布、互不影响**
-- 数据库迁移 **强一致、可控**
-- 基础设施 **稳定，不随业务变更**
-- 支持多项目、多环境的持续部署
+**Project CD** 是一个用于 **生产环境部署（CD）** 的基础设施与服务运行仓库。
 
----
+它基于：
 
-## ✨ 核心特性
+* Docker
+* Docker Compose
+* 环境变量驱动（CI/CD Variables）
 
-### 1️⃣ 前后端完全分离部署
-- Frontend / Backend 使用独立 Compose
-- 可单独发版
-- 发布互不影响
+用于统一管理：
 
-### 2️⃣ 基础设施与业务解耦
-- 数据库、Redis、网络由 Infra 统一管理
-- 不随业务发布重启
-- 多项目可共享同一套 Infra
-
-### 3️⃣ 数据迁移作为一次性部署单元
-- Migration 不作为常驻服务
-- 每次后端部署前强制执行
-- 失败即终止部署流程
-
-### 4️⃣ CI/CD 环境变量统一注入
-- 生产环境不依赖 `.env` 文件
-- GitLab CI 是唯一配置源
-- 本地通过 `.env` 模拟 CI 行为
+* 多项目
+* 多服务（frontend / backend / migrate）
+* 多环境（dev / staging / prod）
 
 ---
 
-## 📁 标准目录结构
+## 二、设计目标
+
+本项目的核心设计目标：
+
+* ✅ **CI / CD 职责严格解耦**
+* ✅ **服务部署可重复、可审计**
+* ✅ **数据库迁移可控、可回滚**
+* ✅ **支持多项目并行运行**
+* ✅ **适配企业级环境隔离模型**
+
+---
+
+## 三、项目定位
+
+### 这个仓库是做什么的？
+
+* 描述 **基础设施运行方式**
+* 描述 **服务的运行态**
+* 管理 **镜像版本 → 实际运行实例**
+
+### 这个仓库不做什么？
+
+* ❌ 不构建镜像
+* ❌ 不管理业务源码
+* ❌ 不跑测试
+* ❌ 不负责 CI Pipeline
+
+> **镜像构建属于业务仓库的 CI，
+> 本仓库只关心“用哪个镜像，怎么跑”。**
+
+---
+
+## 四、整体架构
+
+```text
+┌────────────┐
+│  CI (App)  │  Build / Test / Push Image
+└─────┬──────┘
+      │
+      ▼
+┌────────────────────┐
+│   Container Registry│
+└─────┬──────────────┘
+      │
+      ▼
+┌──────────────────────────┐
+│      Project CD           │
+│  (This Repository)        │
+│                            │
+│  - Infra                   │
+│  - Docker Compose          │
+│  - Migration Control       │
+└───────────┬────────────────┘
+            │
+            ▼
+     Production Servers
+```
+
+---
+
+## 五、仓库结构
 
 ```text
 .
-├── infra
-│   ├── infra.compose.yml
-│   └── deploy-infra.sh
-│
-├── project-a
-│   ├── backend
-│   ├── frontend
-│   ├── migrate
-│   └── README.md
-└── README.md
-````
-
----
-
-## 🧱 Infra 职责说明
-
-Infra 负责提供 **平台级基础能力**：
-
-* Postgres 数据库实例
-* Redis 实例
-* Docker 网络
-* 平台级数据库管理员用户
-
-⚠️ **Infra 不负责具体业务数据库的创建和管理（表 / schema）**
-
----
-
-## 🚀 操作使用说明
-
-### 一、启动基础设施（首次或 Infra 更新）
-
-```bash
-cd infra
-./deploy-infra.sh
+├── README.md        # 项目总览（你正在看的）
+├── USE.md           # 使用说明（如何部署）
+├── infra            # 基础设施（DB / Redis / Network）
+│   ├── deploy-infra.sh
+│   └── infra.compose.yml
+└── neo-blog         # 示例项目（可扩展为多个项目）
+    ├── README.md
+    ├── blog
+    ├── blog-admin
+    └── blog-api
 ```
 
-执行完成后：
+---
 
-* Postgres / Redis 容器处于运行状态
-* 平台级网络已创建
-* **此时尚未创建任何业务数据库**
+## 六、核心设计思想
+
+### 1️⃣ CI / CD 解耦
+
+* CI：**构建与发布**
+* CD：**运行与部署**
+
+通过镜像 + tag 作为唯一契约，避免环境漂移。
 
 ---
 
-### 二、手动创建业务数据库（必须执行一次）
+### 2️⃣ 迁移（Migration）是显式行为
 
-> 该步骤属于 **平台初始化（Provisioning）**，
-> 不属于应用部署流程，只需在新项目或新环境中执行一次。
+* 数据库迁移不会“自动发生”
+* 每次 migration 都是一次明确的操作
+* migration 失败 = 服务不会启动
 
-#### 1️⃣ 进入 Postgres 容器
+> 这是生产系统最重要的安全边界之一。
 
-```bash
-docker exec -it platform-postgres psql -U platform_admin
+---
+
+### 3️⃣ 多项目、多服务天然支持
+
+* 每个项目是一个目录
+* 每个服务一个 compose 文件
+* 环境变量决定一切
+
+不依赖服务名、不依赖 container_name、不依赖固定端口。
+
+---
+
+### 4️⃣ 本地 ≈ 线上
+
+* 本地通过 `.env.*.deploy` 模拟 CI
+* 线上由 GitLab CI/CD Variables 注入
+
+**部署脚本完全一致**。
+
+---
+
+## 七、适用场景
+
+本仓库非常适合以下团队或项目：
+
+* 中小型技术团队
+* 微服务 / 多前端项目
+* 希望从单机部署演进到规范化 CD
+* 不想引入 Kubernetes，但仍然追求工程秩序
+
+---
+
+## 八、不适合的场景
+
+* ❌ 超大规模集群（建议 Kubernetes）
+* ❌ 强依赖 Service Mesh
+* ❌ 需要自动弹性伸缩
+
+---
+
+## 九、如何开始
+
+👉 **请直接阅读：**
+
+```text
+USE.md
 ```
 
-#### 2️⃣ 创建业务数据库
+该文档包含：
 
-```sql
-CREATE DATABASE neo_blog_db;
--- 如果有其他项目
-CREATE DATABASE project_a_db;
-```
-
-#### 3️⃣ 退出
-
-```sql
-\q
-```
-
-📌 说明：
-
-* 数据库名称由 **项目自行定义**
-* 需与项目中 `DATABASE_URL` 保持一致
-* 后续部署 **不需要重复执行该步骤**
+* Infra 初始化
+* 后端 / 前端部署流程
+* 数据库创建与迁移
+* 本地模拟 CI 的方法
 
 ---
 
-### 三、部署后端（包含数据库迁移）
+## 十、设计原则总结
 
-```bash
-cd project-a/backend
-./deploy-backend.sh
-```
-
-执行顺序：
-
-1. 加载 CI 环境变量
-2. 校验必需变量
-3. 拉取 backend / migrate 镜像
-4. 执行数据库 migration（表结构变更）
-5. 启动 backend 服务
-
-> ❗ 如果业务数据库不存在，migration 将直接失败
-
----
-
-### 四、部署前端
-
-```bash
-cd project-a/frontend
-./deploy-frontend.sh
-```
-
-* 前端可独立部署
-* 不影响后端或数据库
-
----
-
-## 🔐 环境变量规范
-
-### 生产 / CI 环境
-
-* 所有变量由 GitLab CI 管理
-* `docker compose` 自动读取 CI 环境变量
-* 不依赖 `.env` 文件
-
-### 本地模拟 CI
-
-* 使用 `.env.backend.deploy` / `.env.frontend.deploy`
-* 脚本通过 `source` 加载
-* 行为与线上 CI 一致
-
----
-
-## 🛡️ 稳定性与安全设计
-
-* 强制环境变量校验
-* 数据迁移与后端部署强绑定
-* Infra 与业务完全解耦
-* 不允许 CI 自动创建数据库
-
----
-
-## 📈 可扩展方向
-
-* 多项目并行部署
-* 多环境（dev / staging / prod）
-* Worker / Cron 等服务形态
-* 平滑演进至 Kubernetes
-
----
-
-## 📝 最佳实践总结
-
-* Infra 只负责“提供能力”，不负责“业务状态”
-* 数据库必须先于 migration 创建
-* Migration 只使用 `docker compose run`
-* 后端启动前必须 migration 成功
+* 一切皆显式
+* 不做“隐式魔法”
+* 人比系统重要
+* 可维护性优先于自动化
 
 ---
 
