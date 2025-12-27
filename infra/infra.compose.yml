@@ -25,6 +25,12 @@ services:
     networks:
       - database-network-prod
 
+  network-anchor:
+    image: busybox
+    command: [ "sh", "-c", "sleep infinity" ]
+    networks:
+      - app-network-prod
+
 volumes:
   platform-postgres-data:
   platform-redis-data:

@@ -50,7 +50,6 @@ docker compose -f "$MIGRATE_COMPOSE_FILE" pull
 # ------------------------
 echo "🗄️ Running database migration..."
 docker compose \
-  --env-file "$ENV_FILE" \
   -f "$MIGRATE_COMPOSE_FILE" \
   run --rm "$CI_MIGRATE_SERVICE"
 
@@ -59,7 +58,6 @@ docker compose \
 # ------------------------
 echo "🚀 Starting $CI_SERVICE service..."
 docker compose \
-  --env-file "$ENV_FILE" \
   -f "$BACKEND_COMPOSE_FILE" \
   up -d "$CI_SERVICE"
 
