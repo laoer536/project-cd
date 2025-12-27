@@ -1,7 +1,6 @@
 services:
-  frontend:
-    image: ${CI_REGISTRY_FRONTEND_IMAGE}:${FRONTEND_IMAGE_TAG}
-    container_name: neo-blog-frontend
+  blog-admin:
+    image: ${CI_REGISTRY}/${CI_PROJECT}/${CI_SERVICE}:${CI_TAG}
     restart: unless-stopped
     env_file:
       - .env.frontend.deploy

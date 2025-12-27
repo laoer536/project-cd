@@ -4,7 +4,8 @@ set -euo pipefail
 echo "🚀 Backend deployment started (local CI simulation)"
 
 ENV_FILE=".env.backend.deploy"
-COMPOSE_FILE="backend.compose.yml"
+BACKEND_COMPOSE_FILE="blog-api.backend.compose.yml"
+MIGRATE_COMPOSE_FILE="migrate/blog-api.migrate.compose.yml"
 
 # ------------------------
 # Load CI env (simulate GitLab CI)
@@ -22,26 +23,27 @@ set +a
 # ------------------------
 # Required vars check
 # ------------------------
-: "${CI_BACKEND_IMAGE:?CI_BACKEND_IMAGE is required}"
-: "${BACKEND_MIGRATE_IMAGE:?BACKEND_MIGRATE_IMAGE is required}"
-: "${BACKEND_IMAGE_TAG:?BACKEND_IMAGE_TAG is required}"
-: "${MIGRATE_IMAGE_TAG:?MIGRATE_IMAGE_TAG is required}"
+: "${CI_REGISTRY:?CI_REGISTRY is required}"
+: "${CI_PROJECT:?CI_PROJECT is required}"
+: "${CI_SERVICE:?CI_SERVICE is required}"
+: "${CI_TAG:?CI_TAG is required}"
+: "${CI_MIGRATE_SERVICE:?CI_MIGRATE_SERVICE is required}"
+
 
 # ------------------------
 # Docker registry login
 # ------------------------
-if [ -n "${CI_REGISTRY:-}" ]; then
-  echo "🔐 Logging into registry $CI_REGISTRY"
-  echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" \
-    -u "$CI_REGISTRY_USER" \
-    --password-stdin
-fi
+echo "🔐 Logging into registry $CI_REGISTRY"
+echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" \
+  -u "$CI_REGISTRY_USER" \
+  --password-stdin
 
 # ------------------------
 # Pull images
 # ------------------------
-echo "📥 Pulling backend images..."
-docker compose -f "$COMPOSE_FILE" pull
+echo "📥 Pulling images..."
+docker compose -f "$BACKEND_COMPOSE_FILE" pull
+docker compose -f "$MIGRATE_COMPOSE_FILE" pull
 
 # ------------------------
 # Run migration
@@ -49,16 +51,16 @@ docker compose -f "$COMPOSE_FILE" pull
 echo "🗄️ Running database migration..."
 docker compose \
   --env-file "$ENV_FILE" \
-  -f "$COMPOSE_FILE" \
-  run --rm migrate
+  -f "$MIGRATE_COMPOSE_FILE" \
+  run --rm "$CI_MIGRATE_SERVICE"
 
 # ------------------------
 # Start backend
 # ------------------------
-echo "🚀 Starting backend service..."
+echo "🚀 Starting $CI_SERVICE service..."
 docker compose \
   --env-file "$ENV_FILE" \
-  -f "$COMPOSE_FILE" \
-  up -d backend
+  -f "$BACKEND_COMPOSE_FILE" \
+  up -d "$CI_SERVICE"
 
-echo "✅ Backend deployment complete"
+echo "✅ $CI_SERVICE deployment complete"

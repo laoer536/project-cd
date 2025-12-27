@@ -1,0 +1,14 @@
+services:
+  blog:
+    image: ${CI_REGISTRY}/${CI_PROJECT}/${CI_SERVICE}:${CI_TAG}
+    restart: unless-stopped
+    env_file:
+      - .env.frontend.deploy
+    ports:
+      - "3001:3000"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    external: true

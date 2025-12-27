@@ -1,7 +1,6 @@
 services:
-  backend:
-    image: ${CI_BACKEND_IMAGE}:${BACKEND_IMAGE_TAG}
-    container_name: neo-blog-backend
+  blog-api:
+    image: ${CI_REGISTRY}/${CI_PROJECT}/${CI_SERVICE}:${CI_TAG}
     restart: unless-stopped
     networks:
       - database-network

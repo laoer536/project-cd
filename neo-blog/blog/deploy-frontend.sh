@@ -4,7 +4,7 @@ set -euo pipefail
 echo "🚀 Frontend deployment started"
 
 CI_ENV_FILE=".env.frontend.deploy"
-COMPOSE_FILE="frontend.compose.yml"
+COMPOSE_FILE="blog.frontend.compose.yml"
 
 # ------------------------
 # Load CI env (simulate CI runner)
@@ -22,24 +22,23 @@ set +a
 # ------------------------
 # Required vars check
 # ------------------------
-: "${CI_REGISTRY_FRONTEND_IMAGE:?CI_REGISTRY_FRONTEND_IMAGE is required}"
+: "${CI_REGISTRY:?CI_REGISTRY is required}"
+: "${CI_PROJECT:?CI_PROJECT is required}"
+: "${CI_SERVICE:?CI_SERVICE is required}"
+: "${CI_TAG:?CI_TAG is required}"
 
 # ------------------------
 # Docker registry login
 # ------------------------
-if [ -n "${CI_REGISTRY:-}" ]; then
-  echo "🔐 Logging into registry $CI_REGISTRY"
-  echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" \
-    -u "$CI_REGISTRY_USER" \
-    --password-stdin
-else
-  echo "ℹ️ CI_REGISTRY not set, skip docker login"
-fi
+echo "🔐 Logging into registry $CI_REGISTRY"
+echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" \
+  -u "$CI_REGISTRY_USER" \
+  --password-stdin
 
 # ------------------------
 # Pull image
 # ------------------------
-echo "📥 Pulling frontend image..."
+echo "📥 Pulling $CI_SERVICE image..."
 docker compose \
   -f "$COMPOSE_FILE" \
   pull frontend
@@ -47,9 +46,9 @@ docker compose \
 # ------------------------
 # Start frontend
 # ------------------------
-echo "🚀 Starting frontend service..."
+echo "🚀 Starting $CI_SERVICE service..."
 docker compose \
   -f "$COMPOSE_FILE" \
-  up -d frontend
+  up -d "$CI_SERVICE"
 
-echo "✅ Frontend deployment complete"
+echo "✅ $CI_SERVICE deployment complete"

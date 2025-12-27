@@ -1,6 +1,6 @@
 services:
-  migrate:
-    image: ${BACKEND_MIGRATE_IMAGE}:${MIGRATE_IMAGE_TAG}
+  blog-api-migrate:
+    image: ${CI_REGISTRY}/${CI_PROJECT}/${CI_MIGRATE_SERVICE}:${CI_TAG}
     command: ["bun", "run", "prisma:deploy"]
     networks:
       - database-network
