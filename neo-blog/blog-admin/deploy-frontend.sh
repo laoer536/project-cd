@@ -4,7 +4,7 @@ set -euo pipefail
 echo "🚀 Frontend deployment started"
 
 CI_ENV_FILE=".env.frontend.deploy"
-COMPOSE_FILE="blog-admin.frontend.compose"
+COMPOSE_FILE="blog-admin.frontend.compose.yml"
 
 # ------------------------
 # Load CI env (simulate CI runner)

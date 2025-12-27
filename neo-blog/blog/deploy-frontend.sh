@@ -41,7 +41,7 @@ echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" \
 echo "📥 Pulling $CI_SERVICE image..."
 docker compose \
   -f "$COMPOSE_FILE" \
-  pull frontend
+  pull "$CI_SERVICE"
 
 # ------------------------
 # Start frontend
