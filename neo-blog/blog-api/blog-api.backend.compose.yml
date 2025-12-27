@@ -3,11 +3,11 @@ services:
     image: ${CI_REGISTRY}/${CI_PROJECT}/${CI_SERVICE}:${CI_TAG}
     restart: unless-stopped
     networks:
-      - database-network
-      - app-network
+      - database-network-prod
+      - app-network-prod
 
 networks:
-  database-network:
+  database-network-prod:
     external: true
-  app-network:
+  app-network-prod:
     external: true

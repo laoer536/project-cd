@@ -91,8 +91,8 @@ Infra 负责：
 * Redis
 * Docker 网络：
 
-    * `database-network`
-    * `app-network`
+    * `database-network-prod`
+    * `app-network-prod`
 
 Infra 是 **全局共享、长期运行** 的。
 
@@ -219,8 +219,8 @@ cd neo-blog/blog-admin
 
 | 网络               | 用途                     |
 | ---------------- | ---------------------- |
-| database-network | backend / migrate ↔ DB |
-| app-network      | frontend ↔ backend     |
+| database-network-prod | backend / migrate ↔ DB |
+| app-network-prod      | frontend ↔ backend     |
 
 网络由 infra 创建，其它 compose 通过 `external: true` 使用。
 

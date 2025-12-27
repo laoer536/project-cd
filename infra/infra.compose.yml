@@ -9,7 +9,7 @@ services:
     volumes:
       - platform-postgres-data:/var/lib/postgresql/data
     networks:
-      - database-network
+      - database-network-prod
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U laoer536"]
       interval: 5s
@@ -23,18 +23,18 @@ services:
     volumes:
       - platform-redis-data:/data
     networks:
-      - database-network
+      - database-network-prod
 
 volumes:
   platform-postgres-data:
   platform-redis-data:
 
 networks:
-  database-network:
-    name: database-network
+  database-network-prod:
+    name: database-network-prod
     driver: bridge
 
-  app-network:
-    name: app-network
+  app-network-prod:
+    name: app-network-prod
     driver: bridge
 
