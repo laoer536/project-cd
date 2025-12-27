@@ -2,8 +2,6 @@ services:
   blog:
     image: ${CI_REGISTRY}/${CI_PROJECT}/${CI_SERVICE}:${CI_TAG}
     restart: unless-stopped
-    env_file:
-      - .env.frontend.deploy
     ports:
       - "3002:3002"
     networks:
