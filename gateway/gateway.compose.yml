@@ -1,0 +1,17 @@
+services:
+  gateway:
+    image: nginx:alpine
+    container_name: platform-gateway
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf:/etc/nginx/conf.d:ro
+      - ./certs:/etc/nginx/certs:ro
+    networks:
+      - app-network-prod
+
+networks:
+  app-network-prod:
+    external: true

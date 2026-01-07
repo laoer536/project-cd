@@ -6,6 +6,12 @@ services:
       - DATABASE_URL=${DATABASE_URL}
       - NODE_ENV=${NODE_ENV}
       - SERVER_PORT=${SERVER_PORT}
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - NODEMAILER_AUTH_EMAIL=${NODEMAILER_AUTH_EMAIL}
+      - NODEMAILER_AUTH_PASS=${NODEMAILER_AUTH_PASS}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_HOST=${SMTP_HOST}
+      - ADMIN_KEY=${ADMIN_KEY}
     networks:
       - database-network-prod
       - app-network-prod
