@@ -1,11 +1,18 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "🚀 Backend deployment started (local CI simulation)"
+# ------------------------
+# Resolve script directory (CRITICAL)
+# ------------------------
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
 
-ENV_FILE=".env.backend.deploy"
-BACKEND_COMPOSE_FILE="blog-api.backend.compose.yml"
-MIGRATE_COMPOSE_FILE="migrate/blog-api.migrate.compose.yml"
+echo "📂 Script dir: $SCRIPT_DIR"
+echo "🚀 Backend deployment started"
+
+ENV_FILE="$SCRIPT_DIR/.env.backend.deploy"
+BACKEND_COMPOSE_FILE="$SCRIPT_DIR/blog-api.backend.compose.yml"
+MIGRATE_COMPOSE_FILE="$SCRIPT_DIR/migrate/blog-api.migrate.compose.yml"
 
 # ------------------------
 # Load CI env (simulate GitLab CI)
@@ -24,7 +31,8 @@ set +a
 # Required vars check
 # ------------------------
 : "${CI_REGISTRY:?CI_REGISTRY is required}"
-: "${CI_PROJECT:?CI_PROJECT is required}"
+#: "${CI_PROJECT:?CI_PROJECT is required}" （gitlab自带了）
+: "${CI_REGISTRY_IMAGE:?CI_REGISTRY_IMAGE is required}"
 : "${CI_SERVICE:?CI_SERVICE is required}"
 : "${CI_TAG:?CI_TAG is required}"
 : "${CI_MIGRATE_SERVICE:?CI_MIGRATE_SERVICE is required}"

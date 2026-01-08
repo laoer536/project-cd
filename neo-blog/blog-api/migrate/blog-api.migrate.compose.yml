@@ -1,6 +1,6 @@
 services:
   blog-api-migrate:
-    image: ${CI_REGISTRY}/${CI_PROJECT}/${CI_MIGRATE_SERVICE}:${CI_TAG}
+    image: ${CI_REGISTRY_IMAGE}/${CI_MIGRATE_SERVICE}:${CI_TAG}
     command: ["bun", "run", "prisma:deploy"]
     environment:
       - DATABASE_URL=${DATABASE_URL}
