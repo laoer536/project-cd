@@ -2,8 +2,6 @@ services:
   blog:
     image: ${CI_REGISTRY}/${CI_PROJECT}/${CI_SERVICE}:${CI_TAG}
     restart: unless-stopped
-    ports:
-      - "3002:3002"
     networks:
       - app-network-prod
 
