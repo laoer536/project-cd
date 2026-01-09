@@ -1,6 +1,7 @@
 services:
   blog:
-    image: ${CI_REGISTRY}/${CI_PROJECT}/${CI_SERVICE}:${CI_TAG}
+#    image: ${CI_REGISTRY}/${CI_PROJECT}/${CI_SERVICE}:${CI_TAG}
+    image: ${CI_REGISTRY_IMAGE}:${CI_TAG}
     restart: unless-stopped
     networks:
       - app-network-prod

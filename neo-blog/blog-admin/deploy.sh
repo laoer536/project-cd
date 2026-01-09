@@ -31,10 +31,12 @@ set +a
 # ------------------------
 # Required vars check
 # ------------------------
-: "${CI_REGISTRY:?CI_REGISTRY is required}"
-: "${CI_PROJECT:?CI_PROJECT is required}"
-: "${CI_SERVICE:?CI_SERVICE is required}"
 : "${CI_TAG:?CI_TAG is required}"
+: "${CI_REGISTRY:?CI_REGISTRY is required}"
+: "${CI_REGISTRY_USER:?CI_REGISTRY_USER is required}"
+: "${CI_REGISTRY_PASSWORD:?CI_REGISTRY_PASSWORD is required}"
+: "${CI_REGISTRY_IMAGE:?CI_REGISTRY_IMAGE is required}"
+: "${CI_SERVICE:?CI_SERVICE is required}"
 
 # ------------------------
 # Docker registry login
