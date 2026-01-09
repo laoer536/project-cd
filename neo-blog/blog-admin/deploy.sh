@@ -10,7 +10,6 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
 echo "📂 Script dir: $SCRIPT_DIR"
-echo "🚀 Backend deployment started"
 
 CI_ENV_FILE="$SCRIPT_DIR/.env.local"
 COMPOSE_FILE="$SCRIPT_DIR/docker-compose.yml"
@@ -37,6 +36,8 @@ set +a
 : "${CI_REGISTRY_PASSWORD:?CI_REGISTRY_PASSWORD is required}"
 : "${CI_REGISTRY_IMAGE:?CI_REGISTRY_IMAGE is required}"
 : "${CI_SERVICE:?CI_SERVICE is required}"
+
+echo "🚀 $CI_SERVICE deployment started"
 
 # ------------------------
 # Docker registry login
