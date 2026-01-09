@@ -10,9 +10,9 @@ cd "$SCRIPT_DIR"
 echo "📂 Script dir: $SCRIPT_DIR"
 echo "🚀 Backend deployment started"
 
-ENV_FILE="$SCRIPT_DIR/.env.backend.deploy"
-BACKEND_COMPOSE_FILE="$SCRIPT_DIR/blog-api.backend.compose.yml"
-MIGRATE_COMPOSE_FILE="$SCRIPT_DIR/migrate/blog-api.migrate.compose.yml"
+ENV_FILE="$SCRIPT_DIR/.env.local"
+BACKEND_COMPOSE_FILE="$SCRIPT_DIR/docker-compose.yml"
+MIGRATE_COMPOSE_FILE="$SCRIPT_DIR/migrate/docker-compose.yml"
 
 # ------------------------
 # Load CI env (simulate GitLab CI)

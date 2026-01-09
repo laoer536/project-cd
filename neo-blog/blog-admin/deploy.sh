@@ -12,8 +12,8 @@ cd "$SCRIPT_DIR"
 echo "📂 Script dir: $SCRIPT_DIR"
 echo "🚀 Backend deployment started"
 
-CI_ENV_FILE="$SCRIPT_DIR/.env.frontend.deploy"
-COMPOSE_FILE="$SCRIPT_DIR/blog-admin.frontend.compose.yml"
+CI_ENV_FILE="$SCRIPT_DIR/.env.local"
+COMPOSE_FILE="$SCRIPT_DIR/docker-compose.yml"
 
 # ------------------------
 # Load CI env (simulate CI runner)
