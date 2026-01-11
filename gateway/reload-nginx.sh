@@ -2,7 +2,7 @@
 
 set -e
 
-GATEWAY_CONTAINER="gateway"
+GATEWAY_CONTAINER="platform-gateway"
 
 echo "[host] checking nginx config in gateway..."
 docker exec "$GATEWAY_CONTAINER" nginx -t

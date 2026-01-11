@@ -37,6 +37,8 @@ set +a
 : "${CI_TAG:?CI_TAG is required}"
 : "${CI_MIGRATE_SERVICE:?CI_MIGRATE_SERVICE is required}"
 : "${SERVER_PORT:?SERVER_PORT is required}"
+: "${REDIS_HOST:?SERVER_PORT is required}"
+: "${REDIS_PORT:?REDIS_PORT is required}"
 
 
 # ------------------------
