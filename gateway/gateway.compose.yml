@@ -7,8 +7,10 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx/conf:/etc/nginx/conf.d:ro
-      - ./certs:/etc/nginx/certs:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro      # 自定义 nginx.conf
+      - ./nginx/conf:/etc/nginx/conf.d:ro               # server 配置
+      - ./nginx/cache/blog:/var/cache/nginx/blog        # Blog 项目缓存目录 需要提前创建对应的缓存文件夹 并保证 Nginx 进程对它有写权限 chown -R 101:101 ./nginx/cache/blog
+      - ./certs:/etc/nginx/certs:ro                     # SSL 证书
     networks:
       - app-network-prod
 
