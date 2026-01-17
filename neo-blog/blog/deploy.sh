@@ -37,6 +37,7 @@ set +a
 : "${CI_REGISTRY_PASSWORD:?CI_REGISTRY_PASSWORD is required}"
 : "${CI_REGISTRY_IMAGE:?CI_REGISTRY_IMAGE is required}"
 : "${CI_SERVICE:?CI_SERVICE is required}"
+: "${BACKEND_SERVER_URL:?BACKEND_SERVER_URL is required}"
 
 echo "🚀 $CI_SERVICE deployment started"
 
