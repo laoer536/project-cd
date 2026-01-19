@@ -7,17 +7,17 @@
 ## 📁 项目结构
 
 ```text
-neo-blog/
-├── backend
-│   ├── backend.compose.yml
-│   └── deploy-backend.sh
-│
-├── frontend
-│   ├── frontend.compose.yml
-│   └── deploy-frontend.sh
-│
-├── migrate
-│   └── migrate.compose.yml
-│
-└── README.md
+.
+├── README.md
+├── blog
+│   ├── deploy.sh
+│   └── docker-compose.yml
+├── blog-admin
+│   ├── deploy.sh
+│   └── docker-compose.yml
+└── blog-api
+    ├── deploy.sh
+    ├── docker-compose.yml
+    └── migrate
+        └── docker-compose.yml
 ```
